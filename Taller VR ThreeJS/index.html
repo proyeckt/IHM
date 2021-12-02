@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Taller VR ThreeJS</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	
+	<body>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+		<script src="js/StereoEffect.js"></script>
+		<script src="js/DeviceOrientationControls.js"></script>
+		<script>
+
+			let windowHalfX = window.innerWidth / 2;
+			let windowHalfY = window.innerHeight / 2;
+
+			const scene = new THREE.Scene();
+			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000 );
+
+			//Device Orientation
+			const controls = new THREE.DeviceOrientationControls( camera );
+			const renderer = new THREE.WebGLRenderer();
+			renderer.setPixelRatio( window.devicePixelRatio );
+			
+
+			document.body.appendChild( renderer.domElement );
+
+			var effect = new THREE.StereoEffect( renderer );
+			effect.setSize( window.innerWidth, window.innerHeight );
+
+			camera.position.z = 25;
+			
+			window.addEventListener( 'resize', onWindowResize );
+				
+			function onWindowResize() {
+
+				windowHalfX = window.innerWidth / 2;
+				windowHalfY = window.innerHeight / 2;
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				effect.setSize( window.innerWidth, window.innerHeight );
+
+			}
+			
+			//Ball
+			var geometry_ball = new THREE.SphereGeometry(3, 40,40);
+			
+			var material_ball = new THREE.MeshBasicMaterial({color: 0x008b8b});
+			
+			var ball = new THREE.Mesh(geometry_ball, material_ball);
+			
+			ball.position.set(0,10,0);
+
+			scene.add(ball);
+
+			const raycaster = new THREE.Raycaster();
+			const mouse = new THREE.Vector2();
+
+			// function onMouseMove( event ) {
+			// 	// calculate mouse position in normalized device coordinates
+			// 	// (-1 to +1) for both components
+			// 	mouse.x = 0;
+			// 	mouse.y = 0;
+			// }
+
+			mouse.x =0;
+			mouse.y =0;
+			
+			var aceleration = -0.0008;
+			var velocity = 0;
+
+			const animate = function () {
+				requestAnimationFrame( animate );
+
+				//ball.position.y=aceleration;
+				velocity+= aceleration;
+				ball.position.y +=velocity;
+				// update the picking ray with the camera and mouse position
+				raycaster.setFromCamera( mouse, camera );
+
+				// calculate objects intersecting the picking ray
+				const intersects = raycaster.intersectObjects( scene.children );
+
+				for ( let i = 0; i < intersects.length; i ++ ) {
+					intersects[ i ].object.material.color.set( 0x5f4b8b );
+				}
+
+				//ball.position.y = aceleration/2 * ball.position.y;
+
+				//controls.update();
+
+				effect.render( scene, camera );
+			};
+			
+			animate();
+
+
+			// create an AudioListener and add it to the camera
+			const listener = new THREE.AudioListener();
+			camera.add( listener );
+
+			// create the PositionalAudio object (passing in the listener)
+			const sound = new THREE.PositionalAudio( listener );
+
+			// load a sound and set it as the PositionalAudio object's buffer
+			const audioLoader = new THREE.AudioLoader();
+			audioLoader.load( 'audio/sirena.mp3', function( buffer ) {
+				sound.setBuffer( buffer );
+				sound.setRefDistance( 20 );
+				sound.play();
+			});
+
+			
+			// finally add the sound to the mesh
+			ball.add( sound );
+
+
+			//window.addEventListener( 'mousemove', onMouseMove, false );
+
+		</script>
+	</body>
+</html>

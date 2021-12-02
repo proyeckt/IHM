@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	
+	<body>
+    <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" integrity="sha384-PiBR5S00EtOj2Lto9Uu81cmoyZqR57XcOna1oAuVuIEjzj0wpqDVfD0JA9eXlRsj" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+
+      const scene = new THREE.Scene();
+			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000 );
+
+			const renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+
+			camera.position.z = 4;
+			
+      
+			const geometry = new THREE.BoxGeometry();
+			const material = new THREE.MeshBasicMaterial( { color: 0x004dff } );
+			const cube = new THREE.Mesh( geometry, material );
+			
+      scene.add( cube );
+			
+      var angulo = 0;
+
+			const animate = function () {
+				requestAnimationFrame( animate );
+
+				cube.rotation.x += angulo;
+				cube.rotation.y += angulo;
+
+				renderer.render( scene, camera );
+			};
+
+      animate();
+    </script>
+
+    <script>
+      var socket = io();
+
+      var random = Math.random();
+
+      var happy = function(){
+        socket.emit('happy',{
+          reason:'its my birthday' + random
+        });
+      }
+
+      socket.on('serverMsg',function(data){
+        angulo=data.msg/30000; 
+        console.log(data.msg);
+      });
+    </script>
+
+    <button onclick="happy()">Happy</button>
+  
+  </body>
+</html>

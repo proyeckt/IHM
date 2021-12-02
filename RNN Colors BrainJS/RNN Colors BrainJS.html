@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Red neuronal - Parcial HCI - Edwin Turizo Prieto</title>
+</head>
+<body>
+  
+	<label for="tentacles">Edad:</label>
+  <input type="number" id="edad" name="edad">
+  <div></div>
+  <label for="tentacles">Genero (0 ->Masculino | 1 ->Femenino):</label>
+  <input type="number" id="genero" name="genero">
+  <div></div>
+  <input type="button" onclick="update()" value="Color recomendado">
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.4.5/jscolor.min.js"></script>
+	<script src="https://unpkg.com/brain.js"></script>
+
+	<script type="text/javascript">
+
+		var network = new brain.NeuralNetwork();
+
+		network.train([
+			{input: {edad: 20, genero: 0}, output: {rojo: 0,verde: 0.05,azul:0.36}},
+      {input: {edad: 30, genero: 0}, output: {rojo: 0.10,verde: 0.15,azul:0.36}},
+      {input: {edad: 25, genero: 1}, output: {rojo: 0.27,verde: 0.88,azul:0.45}},
+      {input: {edad: 10, genero: 1}, output: {rojo: 0.88,verde: 0.27,azul:0.55}},
+      {input: {edad: 40, genero: 1}, output: {rojo: 0.18,verde: 0.85,azul:0.69}},
+      {input: {edad: 70, genero: 0}, output: {rojo: 0.27,verde: 0.2,azul:0.06}},
+      {input: {edad: 50, genero: 0}, output: {rojo: 0.64,verde: 0.62,azul:0.6}},
+      {input: {edad: 50, genero: 1}, output: {rojo: 0.85,verde: 0.84,azul:0.81}}
+		]);
+
+		function update() {
+
+			var edad = document.getElementById("edad");
+			var genero = document.getElementById("genero");
+			
+
+			var entrada = {
+				edad:parseInt(edad.value),
+        genero:parseInt(genero.value)
+			};
+
+      console.log(entrada);
+
+			var resultado = network.run(entrada);
+      
+      document.body.style.backgroundColor = 'rgb(' + [resultado.rojo*255, resultado.verde*255, resultado.azul*255].join(',') + ')';
+		
+		}
+    
+	</script>
+</body>
+</html>

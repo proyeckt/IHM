@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	
+	<body>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+		<script>
+
+			const scene = new THREE.Scene();
+			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000 );
+
+			const renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+
+			camera.position.z = 18;
+			
+			/*
+			const geometry = new THREE.BoxGeometry();
+			const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+			const cube = new THREE.Mesh( geometry, material );
+			scene.add( cube );
+			
+			const animate = function () {
+				requestAnimationFrame( animate );
+
+				earth.rotation.x += 0.01;
+				earth.rotation.y += 0.01;
+
+				renderer.render( scene, camera );
+			};
+			*/
+			
+			//Variables and Constants
+			var r_earth = 10; //Radio de traslación
+			var theta_earth = 0;
+			var dTheta_earth = 2 * Math.PI / 500;//A mayor denominador, mas lento la traslación
+			
+			var r_moon = 3; //Radio de traslación
+			var theta_moon = 0;
+			var dTheta_moon = 2 * Math.PI / 200; //A mayor denominador, mas lento la traslación
+
+			//Earth
+
+			//Geometry
+			const geometry_earth = new THREE.SphereGeometry(1.2,20,20);
+			//Texture
+			const texture_earth = new THREE.TextureLoader().load( 'textures/earth.jpg' );
+			//Material: Could use a texture
+			const material_earth = new THREE.MeshBasicMaterial( { map: texture_earth } );
+			//Mesh: Geometry + Material
+			const earth = new THREE.Mesh( geometry_earth, material_earth );
+			
+			earth.position.set(7,0,0)
+
+			scene.add( earth );
+
+			//Rotation
+			const rotationEarth = function () {
+				requestAnimationFrame(rotationEarth);
+				earth.rotation.y += 0.02;
+
+				renderer.render( scene, camera );
+			};
+
+			//Traslation
+			const traslationEarth = function (){
+				
+				theta_earth += dTheta_earth;
+				earth.position.x = r_earth * (Math.cos(theta_earth));
+				earth.position.z = r_earth * (Math.sin(theta_earth));
+
+				renderer.render( scene, camera );
+
+				requestAnimationFrame(traslationEarth);
+			}
+
+			rotationEarth();
+			traslationEarth();
+			
+
+			//Moon 
+			var geometry_moon = new THREE.SphereGeometry(0.5, 20,20);
+			var texture_moon = new THREE.TextureLoader().load('textures/moon.jpg');
+			var material_moon = new THREE.MeshBasicMaterial({map: texture_moon});
+			var moon = new THREE.Mesh(geometry_moon, material_moon);
+			
+			moon.position.set(11,0,0);
+			
+			scene.add(moon);
+			
+			//Traslación Moon
+			const traslationMoon = function (){
+				
+				theta_moon += dTheta_moon;
+				moon.position.x = earth.position.x + ( r_moon * (Math.cos(theta_moon)) );
+				moon.position.z = earth.position.z + (r_moon * (Math.sin(theta_moon)) );
+
+				renderer.render( scene, camera );
+
+				requestAnimationFrame(traslationMoon);
+			}
+			
+			traslationMoon();
+
+			//Sun
+			var geometry_sun = new THREE.SphereGeometry(3, 20,20);
+			var texture_sun = new THREE.TextureLoader().load('textures/sun.png');
+			var material_sun = new THREE.MeshBasicMaterial({map: texture_sun});
+			var sun = new THREE.Mesh(geometry_sun, material_sun);
+			
+			sun.position.set(-3,0,0);
+
+			scene.add(sun);
+
+			
+		</script>
+	</body>
+</html>
